@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta Ads Growth Vault | fetchprofits</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { background: radial-gradient(circle at top right, #050a0f, #020406); color: #e5e7eb; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; }
+        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .btn-gradient { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); }
+        .input-dark { background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; color: white !important; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-4">
+
+    <div class="max-w-4xl w-full text-center py-12">
+        <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6">The Meta Ads <span class="text-blue-500">Vault.</span></h1>
+        
+        <div class="glass-card p-8 md:p-12 rounded-[2.5rem] shadow-2xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10 text-left text-sm text-gray-400">
+                <div>✓ 2026 Resource PDF</div>
+                <div>✓ ROI Calculator Sheet</div>
+                <div>✓ Scaling Frameworks</div>
+                <div>✓ Interest Cheat Sheet</div>
+            </div>
+
+            <form id="vaultForm" class="flex flex-col md:flex-row gap-4">
+                <input type="text" id="userName" name="name" required placeholder="First Name" class="input-dark flex-1 px-6 py-4 rounded-2xl">
+                <input type="email" id="userEmail" name="email" required placeholder="Best Email" class="input-dark flex-1 px-6 py-4 rounded-2xl">
+                <button type="submit" id="submitBtn" class="btn-gradient text-white px-10 py-4 rounded-2xl font-bold transition-all hover:scale-105">Unlock Now</button>
+            </form>
+            <p id="statusMsg" class="mt-6 text-sm font-bold"></p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('vaultForm');
+        const btn = document.getElementById('submitBtn');
+        const status = document.getElementById('statusMsg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // ARCHITECT: Create a NEW Webhook in Make.com and paste the URL below
+            const webhookUrl = 'https://hook.us2.make.com/8u0xa02mrqegyx443mug8z5fxwf9aa2a'; 
+
+            const data = {
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                source: 'Meta Vault Page'
+            };
+
+            btn.innerText = 'Connecting...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    btn.innerText = 'Success!';
+                    btn.style.background = '#059669';
+                    status.innerText = 'SUCCESS: Make.com received the data.';
+                    status.className = 'mt-6 text-sm font-bold text-emerald-500';
+                    form.reset();
+                } else {
+                    throw new Error('Status ' + response.status);
+                }
+            } catch (err) {
+                btn.innerText = 'Unlock Now';
+                btn.disabled = false;
+                status.innerText = 'ERROR: ' + err.message + '. Ensure Make.com is "Running Once".';
+                status.className = 'mt-6 text-sm font-bold text-red-500';
+            }
+        });
+    </script>
+</body>
+</html>
