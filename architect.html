@@ -105,32 +105,70 @@
             <h2 class="text-4xl md:text-6xl font-[900] text-white mb-6 tracking-tight uppercase">Get The Brief</h2>
             <p class="text-gray-200 text-xl md:text-2xl mb-16">One weekly tactical note on performance and scale.</p>
             
-     <form id="email_signup" action="//manage.kmail-lists.com/subscriptions/subscribe" method="POST">
-    <input type="hidden" name="g" value="SpZiiW">
+     <div class="glass-card p-12 md:p-32 rounded-[5rem] max-w-5xl mx-auto text-center border-[#520b01]">
+    <h2 class="text-5xl font-black text-white mb-6 uppercase tracking-tight">Get The Brief</h2>
+    <p class="text-gray-200 text-2xl mb-16 font-medium">One weekly tactical note on performance and scale.</p>
     
-    <div class="input-group">
-        <input type="text" name="first_name" id="k_id_name" placeholder="Your Name" required />
-    </div>
-    
-    <div class="input-group">
-        <input type="email" name="email" id="k_id_email" placeholder="Direct Email" required />
-    </div>
+    <form id="k-form" class="flex flex-col gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+            <div class="space-y-3">
+                <label class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-6">Your Name</label>
+                <input type="text" name="first_name" required placeholder="Name" 
+                       class="w-full bg-white/5 border border-white/10 px-10 py-8 rounded-[2rem] text-white text-2xl focus:border-[#ff3d24] outline-none transition-all">
+            </div>
+            <div class="space-y-3">
+                <label class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 ml-6">Direct Email</label>
+                <input type="email" name="email" required placeholder="Email" 
+                       class="w-full bg-white/5 border border-white/10 px-10 py-8 rounded-[2rem] text-white text-2xl focus:border-[#ff3d24] outline-none transition-all">
+            </div>
+        </div>
+        <button type="submit" id="k-btn" class="btn-brand text-white py-10 rounded-[2rem] font-black text-3xl md:text-4xl uppercase tracking-tighter mt-6">
+            Join The Inner Circle
+        </button>
+    </form>
+    <p id="k-status" class="mt-12 text-2xl font-bold"></p>
+</div>
 
-    <div id="klaviyo_success" style="display:none; color: #fff; margin-bottom: 20px; font-weight: bold;">
-        Success! You're in the Inner Circle.
-    </div>
+<script>
+    const form = document.getElementById('k-form');
+    const btn = document.getElementById('k-btn');
+    const status = document.getElementById('k-status');
 
-    <button type="submit" class="btn">Join The Inner Circle</button>
-</form>
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const email = form.email.value;
+        const name = form.first_name.value;
 
-<script type="text/javascript" src="//www.klaviyo.com/media/js/public/klaviyo_subscribe.js"></script>
-<script type="text/javascript">
-    KlaviyoSubscribe.attachToForms('#email_signup', {
-        hide_form_on_success: true,
-        success_message: "Success! You're in the Inner Circle.",
-        extra_properties: {
-            $source: 'Architect Landing Page',
-            $method_type: 'GitHub Pages Form'
+        btn.innerText = 'TRANSMITTING...';
+        btn.disabled = true;
+
+        // Uses the Klaviyo 'Identify' method to push data directly to your account
+        // This relies on the Klaviyo snippet being in your <head>
+        try {
+            const _learnq = window._learnq || [];
+            _learnq.push(['identify', {
+                '$email': email,
+                '$first_name': name,
+                'Source': 'Architect Brief Weekly'
+            }]);
+            
+            // Re-triggering for list subscription
+            _learnq.push(['track', 'Subscribed to Newsletter', {
+                'ListID': 'SpZiiW'
+            }]);
+
+            // Success UI
+            btn.innerText = 'SUCCESS';
+            btn.style.background = '#059669';
+            status.innerText = 'Welcome aboard, Architect.';
+            status.style.color = '#10b981';
+            form.reset();
+        } catch (err) {
+            btn.innerText = 'JOIN THE INNER CIRCLE';
+            btn.disabled = false;
+            status.innerText = 'System error. Try again.';
+            status.style.color = '#ef4444';
         }
     });
 </script>
