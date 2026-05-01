@@ -103,9 +103,9 @@
             </div>
         </div>
             
-     <div class="glass-card p-12 md:p-32 rounded-[5rem] max-w-5xl mx-auto text-center border-[#520b01]">
+   <div class="glass-card p-12 md:p-32 rounded-[5rem] max-w-5xl mx-auto text-center border-[#520b01]">
     <h2 class="text-5xl font-black text-white mb-6 uppercase tracking-tight">Get The Brief</h2>
-    <p class="text-gray-200 text-2xl mb-16 font-medium">One weekly tactical note on performance and scale.</p>
+    <p class="text-gray-200 text-2xl mb-16 font-medium leading-relaxed">One weekly tactical note on performance and scale.</p>
     
     <form id="k-form" class="flex flex-col gap-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
@@ -180,47 +180,60 @@
         </footer>
     </div>
 
-    <script>
-        const form = document.getElementById('signupForm');
-        const btn = document.getElementById('submitBtn');
+   <script>
+    const form = document.getElementById('k-form');
+    const btn = document.getElementById('k-btn');
+    const status = document.getElementById('k-status');
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // ARCHITECT: Paste your Make.com Webhook here
-            const webhookUrl = 'https://hook.us2.make.com/ccttdlbn131a81n6yn2tgcyi5t2qf0db'; 
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const userEmail = form.email.value;
+        const userName = form.first_name.value;
 
-            const data = {
-                name: document.getElementById('userName').value,
-                email: document.getElementById('userEmail').value,
-                source: 'Architecture Brief Signup',
-                timestamp: new Date().toISOString()
-            };
+        btn.innerText = 'TRANSMITTING...';
+        btn.disabled = true;
 
-            btn.innerText = 'TRANSMITTING...';
-            btn.disabled = true;
+        try {
+            // Access the Klaviyo object
+            var _learnq = window._learnq || [];
 
-            try {
-                const response = await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
+            // 1. Identify the profile immediately
+            _learnq.push(['identify', {
+                '$email': userEmail,
+                '$first_name': userName,
+                'Source': 'Architect_Lander'
+            }]);
 
-                if (response.ok) {
-                    btn.innerText = 'SUCCESS';
-                    btn.style.background = '#059669';
-                    document.getElementById('statusMsg').innerText = 'Welcome aboard. Check your inbox.';
-                    document.getElementById('statusMsg').style.color = '#10b981';
-                    form.reset();
-                }
-            } catch (err) {
-                btn.innerText = 'JOIN THE INNER CIRCLE';
-                btn.disabled = false;
-                document.getElementById('statusMsg').innerText = 'Connection error. Please try again.';
-                document.getElementById('statusMsg').style.color = '#ef4444';
-            }
-        });
-    </script>
+            // 2. Track the "Newsletter Signup" event 
+            // This allows you to trigger a flow even if the list sync is pending
+            _learnq.push(['track', 'Architect Brief Signup', {
+                'list_id': 'SpZiiW',
+                'email': userEmail
+            }]);
+
+            // 3. The Subscribe Handshake (Official v3 method compatibility)
+            // This triggers the Double Opt-in email for List SpZiiW
+            _learnq.push(['subscribe', {
+                'list_id': 'SpZiiW',
+                'profiles': [{ 'email': userEmail, 'first_name': userName }]
+            }]);
+
+            // Success UI: Remind them to check their email for Double Opt-in
+            btn.innerText = 'SUCCESS';
+            btn.style.background = '#059669';
+            status.innerText = 'Success! Now check your inbox to confirm.';
+            status.style.color = '#10b981';
+            form.reset();
+
+        } catch (err) {
+            console.error("Klaviyo Error:", err);
+            btn.innerText = 'JOIN THE INNER CIRCLE';
+            btn.disabled = false;
+            status.innerText = 'System error. Please try again.';
+            status.style.color = '#ef4444';
+        }
+    });
+</script>
 </body>
 </html>
