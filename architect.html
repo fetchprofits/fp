@@ -180,58 +180,67 @@
         </footer>
     </div>
 
-   <script>
+<script>
     const form = document.getElementById('k-form');
     const btn = document.getElementById('k-btn');
-    const status = document.getElementById('k-status');
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const userEmail = form.email.value;
-        const userName = form.first_name.value;
+        const email = form.email.value;
+        const name = form.first_name.value;
+        const listId = 'SpZiiW'; // Your Architect Briefs Weekly List
 
         btn.innerText = 'TRANSMITTING...';
         btn.disabled = true;
 
+        // Force a formal subscription request to trigger Double Opt-in
+        const options = {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json',
+                'revision': '2024-02-15'
+            },
+            body: JSON.stringify({
+                data: {
+                    type: 'subscription',
+                    attributes: {
+                        profile: {
+                            data: {
+                                type: 'profile',
+                                attributes: {
+                                    email: email,
+                                    first_name: name
+                                }
+                            }
+                        }
+                    },
+                    relationships: {
+                        list: {
+                            data: {
+                                type: 'list',
+                                id: listId
+                            }
+                        }
+                    }
+                }
+            })
+        };
+
         try {
-            // Access the Klaviyo object
-            var _learnq = window._learnq || [];
+            // Push to Klaviyo's v3 API
+            const response = await fetch(`https://a.klaviyo.com/client/subscriptions/?company_id=YOUR_PUBLIC_API_KEY`, options);
 
-            // 1. Identify the profile immediately
-            _learnq.push(['identify', {
-                '$email': userEmail,
-                '$first_name': userName,
-                'Source': 'Architect_Lander'
-            }]);
-
-            // 2. Track the "Newsletter Signup" event 
-            // This allows you to trigger a flow even if the list sync is pending
-            _learnq.push(['track', 'Architect Brief Signup', {
-                'list_id': 'SpZiiW',
-                'email': userEmail
-            }]);
-
-            // 3. The Subscribe Handshake (Official v3 method compatibility)
-            // This triggers the Double Opt-in email for List SpZiiW
-            _learnq.push(['subscribe', {
-                'list_id': 'SpZiiW',
-                'profiles': [{ 'email': userEmail, 'first_name': userName }]
-            }]);
-
-            // Success UI: Remind them to check their email for Double Opt-in
-            btn.innerText = 'SUCCESS';
-            btn.style.background = '#059669';
-            status.innerText = 'Success! Now check your inbox to confirm.';
-            status.style.color = '#10b981';
-            form.reset();
-
+            if (response.ok) {
+                btn.innerText = 'SUCCESS';
+                btn.style.background = '#059669';
+                document.getElementById('k-status').innerText = 'Check your inbox to confirm.';
+                form.reset();
+            }
         } catch (err) {
-            console.error("Klaviyo Error:", err);
             btn.innerText = 'JOIN THE INNER CIRCLE';
             btn.disabled = false;
-            status.innerText = 'System error. Please try again.';
-            status.style.color = '#ef4444';
         }
     });
 </script>
